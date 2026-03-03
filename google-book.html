@@ -5,6 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Single Book - Google Books JSON</title>
     <link rel="stylesheet" href="style.css">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script>
+        $(function() {
+            $.getJSON("google-book.json", function(data) {
+
+                var info = data.volumeInfo || {};
+
+                $("#book-title").text(info.title || "Unknown Title");
+                $("#book-subtitle").text(info.subtitle || "");
+                $("#book-authors").text(info.authors ? info.authors.join(", ") : "Unknown Author");
+                $("#book-publisher").text(info.publisher || "Unknown Publisher");
+                $("#book-published").text(info.publishedDate || "Unknown Date");
+                $("#book-pages").text(info.pageCount ? info.pageCount + "pages" : "");
+                $("#book-language").text(info.language ? info.langauge.toUpperCase() : "");
+
+                if (info.imageLinks && info.imageLinks.thumbnail) {
+                    var img = $("<img>")
+                        .attr("src", info.imageLinks.thumbnail)
+                        .attr("alt", info.title || "Book Cover");
+                    $("#book-cover").empty().append(img);
+                } else {
+                    $("#book-cover").text("No cover image available.");
+                }
+                $("#book-description").html(info.description || "No description available.");
+            }).fail(function () {
+                $("#book-title").text("Error loading book data");
+                 $("#book-description").text("Could not load google-books-book.json");
+            });
+        });
+    </script>
 </head>
 <body>
     <header>
