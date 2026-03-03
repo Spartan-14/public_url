@@ -19,7 +19,7 @@
                 $("#book-publisher").text(info.publisher || "Unknown Publisher");
                 $("#book-published").text(info.publishedDate || "Unknown Date");
                 $("#book-pages").text(info.pageCount ? info.pageCount + "pages" : "");
-                $("#book-language").text(info.language ? info.langauge.toUpperCase() : "");
+                $("#book-language").text(info.language ? info.language.toUpperCase() : "");
 
                 if (info.imageLinks && info.imageLinks.thumbnail) {
                     var img = $("<img>")
