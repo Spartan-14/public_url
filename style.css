@@ -1,69 +1,464 @@
+/* ============================================================
+   style.css — IT 4403 Student Portfolio
+   
+   This stylesheet is shared across every page of the site.
+   All color values are defined once as CSS custom properties
+   (variables) at the top, so changing the palette later only
+   ever requires editing this one block rather than hunting
+   through the entire file.
+   ============================================================ */
+
+
+/* ── 1. DESIGN TOKENS (CSS custom properties) ────────────────
+   Think of these as named constants for your design system.
+   The var() function reads them wherever they are needed.
+   ─────────────────────────────────────────────────────────── */
+:root {
+    /* Your university's navy — the dominant brand color */
+    --navy:           #003057;
+    /* A lighter, more accessible blue for hover states and links */
+    --navy-hover:     #00538a;
+    /* A very light navy tint — used for subtle backgrounds */
+    --navy-tint:      #e6edf5;
+
+    /* The warm yellow-cream you chose as the page background.
+       rgba lets you control transparency if you ever need it. */
+    --bg-page:        rgba(232, 226, 160, 0.89);
+
+    /* Card surfaces sit on top of the warm background */
+    --bg-card:        #ffffff;
+    --bg-card-inner:  #fafaf8;
+
+    /* Border color for card edges — warm gray that doesn't fight
+       with the yellow background */
+    --border:         #ddd8ce;
+
+    /* Disclaimer panel — the original warning yellow you chose */
+    --warning-bg:     #fff3cd;
+    --warning-border: #ffc107;
+    --warning-text:   #5a4200;
+
+    /* Text hierarchy — three levels of emphasis */
+    --text-dark:      #1a1a1a;    /* headings and primary labels */
+    --text-body:      #3d3d3d;    /* normal paragraph text */
+    --text-muted:     #767676;    /* captions, metadata, hints */
+
+    /* Spacing rhythm — using a base unit of 8px means every
+       margin and padding is a multiple of 8, which keeps
+       vertical spacing consistent and harmonious */
+    --space-xs:   8px;
+    --space-sm:   16px;
+    --space-md:   24px;
+    --space-lg:   36px;
+    --space-xl:   52px;
+
+    /* Corner rounding scale */
+    --radius-sm:  4px;
+    --radius-md:  8px;
+    --radius-lg:  12px;
+
+    /* Shadow scale — sm for subtle lift, md for cards, lg for header */
+    --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.07);
+    --shadow-md:  0 3px 12px rgba(0, 0, 0, 0.09);
+    --shadow-lg:  0 6px 24px rgba(0, 0, 0, 0.13);
+}
+
+
+/* ── 2. RESET & BASE ─────────────────────────────────────────
+   A minimal reset that removes browser inconsistencies without
+   being so aggressive it removes useful defaults like focus
+   outlines (which are important for accessibility).
+   ─────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    line-height: 1.4;
+    /* Segoe UI is the native font on Windows (where most students
+       and graders will be), giving a crisp, modern look without
+       loading any external font. The fallbacks ensure it looks
+       good on Mac and Linux too. */
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--text-body);
+
+    /* The warm yellow background fills the entire viewport */
+    background-color: var(--bg-page);
+
+    /* The 1000px max-width matches your original design intent.
+       The auto horizontal margins center it on wide screens. */
     max-width: 1000px;
     margin: 0 auto;
-    padding: 20px;
-    background-color: rgba(232, 226, 160, 0.89);
+    padding: var(--space-md) var(--space-md) var(--space-xl);
 }
-header {
-    background-color: #003057;
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
+
+/* All links inherit the navy accent and transition smoothly */
+a {
+    color: var(--navy-hover);
+    text-decoration: none;
+    transition: color 0.18s ease;
 }
-header h1 {
-    margin: 0;
-    font-size: 2em;
+
+a:hover {
+    color: var(--navy);
+    text-decoration: underline;
 }
-header p {
-    margin: 5px 0 0 0;
-    font-size: 1.2em;
+
+/* Visible focus ring for keyboard navigation accessibility */
+a:focus-visible {
+    outline: 2px solid var(--navy);
+    outline-offset: 3px;
+    border-radius: 2px;
 }
-main {
-    padding: 20px;
-    background-color: white;
-    margin-top: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
+
+
+/* ── 3. NAVIGATION ───────────────────────────────────────────
+   The nav bar is the one element that appears identically on
+   every page of the site, so it needs to feel like a permanent
+   fixture — solid, clear, and anchored to the top of the page.
+
+   Key decision: the navy background goes on the <nav> element
+   itself rather than on individual <li> items. This creates a
+   unified bar instead of a row of floating separate buttons.
+   ─────────────────────────────────────────────────────────── */
 nav {
-    margin: 20px 0;
+    background-color: var(--navy);
+    border-radius: var(--radius-md);
+    padding: 0 var(--space-xs);
+    margin-bottom: var(--space-md);
+    box-shadow: var(--shadow-md);
 }
+
 nav ul {
-    list-style-type: none;
-    padding: 0;
+    list-style: none;
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    flex-wrap: wrap;      /* wraps to a second line on small screens */
+    gap: 2px;
+    align-items: stretch;
 }
-nav ul li {
-    color: white;
-    text-decoration: none;
-    background-color: #003057;
-    border-radius: 3px;
-    display: inline-block;
-    margin-right: 10px;
-}
+
 nav ul li a {
-    text-decoration: none;
-    color: white;
-    padding: 10px 20px;
     display: block;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    padding: 13px 17px;
+    border-radius: var(--radius-sm);
+    /* Smooth color transition on hover */
+    transition: background-color 0.18s ease, color 0.18s ease;
+    text-decoration: none;
 }
+
 nav ul li a:hover {
-    background-color: #00538a;
+    background-color: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
 }
+
+/* The active class marks the current page in the nav.
+   Apply it in HTML like: <a href="index.html" class="active"> */
+nav ul li a.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+
+/* ── 4. HEADER ───────────────────────────────────────────────
+   The header is the visual anchor of the page — it needs to
+   command authority without feeling heavy. The navy background
+   does the heavy lifting; the subtle gradient adds just enough
+   depth to prevent it from looking flat.
+   ─────────────────────────────────────────────────────────── */
+header {
+    background-color: var(--navy);
+    /* A gentle diagonal gradient from pure navy toward a
+       slightly lighter blue — adds depth without changing
+       the overall color impression */
+    background-image: linear-gradient(
+        150deg,
+        #003057 0%,
+        #004278 100%
+    );
+    color: #ffffff;
+    padding: var(--space-lg) var(--space-md);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    margin-bottom: var(--space-md);
+    box-shadow: var(--shadow-lg);
+}
+
+header h1 {
+    /* Georgia for the main title gives editorial weight and
+       authority — it pairs well with the sans-serif body text
+       and requires no external font loading */
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem); /* scales with viewport */
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin-bottom: var(--space-xs);
+}
+
+header p {
+    font-size: 1rem;
+    /* Slightly transparent so it reads as secondary to the h1
+       without needing a smaller font size */
+    color: rgba(255, 255, 255, 0.78);
+    letter-spacing: 0.02em;
+}
+
+
+/* ── 5. MAIN CONTENT CARD ────────────────────────────────────
+   The <main> element is styled as a white card that floats
+   above the yellow background. The shadow is what creates the
+   sense of depth and separates the content from the backdrop.
+   ─────────────────────────────────────────────────────────── */
+main {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-lg) var(--space-lg);
+    /* Each <section> inside main gets a top margin for breathing
+       room. We define this here rather than on each section so
+       the rhythm is controlled in one place. */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+/* Section headings use navy to tie them back to the header
+   and nav bar, giving the page a cohesive color story */
+main h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy);
+    padding-bottom: 10px;
+    /* The bottom border acts as a visual separator between
+       the heading and the content below it */
+    border-bottom: 2px solid var(--navy-tint);
+    margin-bottom: var(--space-sm);
+}
+
+main p {
+    font-size: 0.95rem;
+    color: var(--text-body);
+    line-height: 1.7;
+    margin-bottom: var(--space-sm);
+}
+
+main p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* ── 6. ABOUT GRID (definition list layout) ──────────────────
+   The <dl> inside the About section uses a CSS grid to create
+   a two-column label-value layout. The <dt> elements form the
+   left column; the <dd> elements form the right.
+
+   A definition list is the semantically correct element here —
+   it communicates "these are named values" to screen readers
+   and search engines, not just to human eyes.
+   ─────────────────────────────────────────────────────────── */
+.about-grid {
+    display: grid;
+    /* 160px for the label column; 1fr (remaining space) for values */
+    grid-template-columns: 160px 1fr;
+    gap: 10px 20px;
+    font-size: 0.93rem;
+}
+
+.about-grid dt {
+    /* Small-caps style for labels — uppercase, smaller size,
+       and muted color so they don't compete with the values */
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    /* Slight top padding aligns the label baseline with the
+       first line of its paired <dd> value */
+    padding-top: 3px;
+}
+
+.about-grid dd {
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+/* A thin horizontal rule between each row helps the eye track
+   across the grid, especially when values are multi-line */
+.about-grid dt,
+.about-grid dd {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0ece6;
+}
+
+/* Remove the border from the last row so it doesn't double
+   up with any border below the grid */
+.about-grid dt:last-of-type,
+.about-grid dd:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+
+/* ── 7. DISCLAIMER PANEL ─────────────────────────────────────
+   The disclaimer needs to stand out from the surrounding
+   content without being alarming. A warm yellow background
+   with a golden left border strikes that balance — it reads
+   as "important note" rather than "error".
+   ─────────────────────────────────────────────────────────── */
 .disclaimer {
-    background-color: #fff3cd;
-    border-left: 4px solid #ffc107;
-    padding: 15px;
-    margin: 20px 0;
+    background-color: var(--warning-bg);
+    border-left: 4px solid var(--warning-border);
+    /* No border-radius on the left so the border line meets
+       the edge cleanly; rounding on the right feels finished */
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: var(--space-sm) var(--space-md);
+    color: var(--warning-text);
+    font-size: 0.88rem;
+    line-height: 1.7;
 }
+
+/* The <strong> label inside the disclaimer acts as a mini
+   heading — smaller than h2, styled to match the warning tone */
+.disclaimer strong {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #8a6200;
+    margin-bottom: var(--space-xs);
+}
+
+
+/* ── 8. LINK LIST ─────────────────────────────────────────────
+   Used for both the Lab Work and Individual Project Work
+   sections. Each <li> contains an <a> link with a small
+   <span class="dot"> bullet before the text.
+
+   The hover state reveals a navy-tinted background, which
+   gives the list an interactive, clickable character without
+   making it look like a grid of buttons.
+   ─────────────────────────────────────────────────────────── */
+.link-list {
+    list-style: none;
+    /* A small gap between items prevents them from feeling
+       cramped while keeping the list compact */
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: var(--space-xs);
+}
+
+.link-list li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    /* A very subtle bottom border separates each item */
+    border-bottom: 1px solid transparent;
+}
+
+.link-list li a:hover {
+    background-color: var(--navy-tint);
+    color: var(--navy);
+    border-bottom-color: transparent;
+}
+
+/* The dot — a small navy circle before each link.
+   Using a <span class="dot"> in the HTML keeps the bullet
+   as a purely decorative element, separate from the link text */
+.link-list .dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--navy);
+    opacity: 0.4;
+    flex-shrink: 0;  /* prevents the dot from squashing on narrow screens */
+    transition: opacity 0.15s ease;
+}
+
+/* When the parent link is hovered, the dot becomes more visible */
+.link-list li a:hover .dot {
+    opacity: 0.9;
+}
+
+
+/* ── 9. FOOTER ───────────────────────────────────────────────
+   The footer should feel like a quiet closing note — present
+   but not demanding attention. A top border separates it from
+   the main content without the need for extra spacing.
+   ─────────────────────────────────────────────────────────── */
 footer {
     text-align: center;
-    padding: 20px;
-    color: #666;
-    font-size: 0.9em;
+    padding: var(--space-md) var(--space-sm);
+    margin-top: var(--space-sm);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    border-top: 1px solid var(--border);
+    line-height: 1.6;
+}
+
+
+/* ── 10. RESPONSIVE LAYOUT ───────────────────────────────────
+   At narrow screen widths (phones and small tablets), the
+   two-column about-grid collapses to a single column, and
+   spacing is tightened so content doesn't feel cramped.
+
+   The breakpoint at 640px is chosen because below that width
+   a 160px label column would leave very little room for values.
+   ─────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+
+    body {
+        padding: var(--space-sm) var(--space-sm) var(--space-lg);
+    }
+
+    main {
+        padding: var(--space-md) var(--space-sm);
+        gap: var(--space-md);
+    }
+
+    /* Stack the label above its value on small screens */
+    .about-grid {
+        grid-template-columns: 1fr;
+        gap: 4px 0;
+    }
+
+    .about-grid dt {
+        margin-top: var(--space-sm);
+        border-bottom: none;
+        padding-bottom: 4px;
+    }
+
+    .about-grid dd {
+        padding-bottom: var(--space-sm);
+    }
+
+    /* Tighten the nav on mobile — items wrap naturally due to
+       flex-wrap on the <ul>, but reducing padding helps them fit */
+    nav ul li a {
+        padding: 10px 13px;
+        font-size: 0.83rem;
+    }
 }
