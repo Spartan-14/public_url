@@ -1,77 +1,447 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Single Book - Google Books JSON</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Single Book Display — IT 4403 Milestone 1</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script>
-        $(function() {
-            $.getJSON("google-books-book.json", function(data) {
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+            line-height: 1.6;
+        }
 
-                var info = data.volumeInfo || {};
+        /* ── Navigation ── */
+        nav {
+            background: #1a3a5c;
+            padding: 0 1.5rem;
+        }
+        nav ul {
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        nav ul li a {
+            display: block;
+            padding: 0.9rem 1.1rem;
+            color: #cce0f5;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+        nav ul li a:hover { background: #24507a; color: #fff; }
+        nav ul li a.active { background: #2e86c1; color: #fff; }
 
-                $("#book-title").text(info.title || "Unknown Title");
-                $("#book-subtitle").text(info.subtitle || "");
-                $("#book-authors").text(info.authors ? info.authors.join(", ") : "Unknown Author");
-                $("#book-publisher").text(info.publisher || "Unknown Publisher");
-                $("#book-published").text(info.publishedDate || "Unknown Date");
-                $("#book-pages").text(info.pageCount ? info.pageCount + "pages" : "");
-                $("#book-language").text(info.language ? info.language.toUpperCase() : "");
+        /* ── Header ── */
+        header {
+            background: linear-gradient(135deg, #1a3a5c 0%, #2e86c1 100%);
+            color: #fff;
+            text-align: center;
+            padding: 2.5rem 1.5rem 2rem;
+        }
+        header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.3rem; }
+        header p  { font-size: 0.95rem; opacity: 0.8; }
 
-                if (info.imageLinks && info.imageLinks.thumbnail) {
-                    var img = $("<img>")
-                        .attr("src", info.imageLinks.thumbnail)
-                        .attr("alt", info.title || "Book Cover");
-                    $("#book-cover").empty().append(img);
-                } else {
-                    $("#book-cover").text("No cover image available.");
-                }
-                $("#book-description").html(info.description || "No description available.");
-            }).fail(function () {
-                $("#book-title").text("Error loading book data");
-                 $("#book-description").text("Could not load google-books-book.json");
-            });
-        });
-    </script>
+        /* ── Main ── */
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1.25rem;
+        }
+
+        /* ── Loading / error state ── */
+        #status-message {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-size: 1rem;
+        }
+        #status-message.error { color: #c0392b; }
+
+        /* ── Book card ── */
+        #book-card {
+            display: none;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+            overflow: hidden;
+        }
+
+        /* Top band: cover + core info */
+        .book-top {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+            border-bottom: 1px solid #e8edf3;
+        }
+        .book-cover { flex-shrink: 0; width: 128px; }
+        .book-cover img {
+            width: 128px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            display: block;
+        }
+        .book-cover .no-cover {
+            width: 128px;
+            height: 180px;
+            background: #d0e6f7;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #567;
+            text-align: center;
+            padding: 0.5rem;
+        }
+        .book-info { flex: 1; }
+        .book-info h2 {
+            font-size: 1.5rem;
+            color: #1a3a5c;
+            margin-bottom: 0.2rem;
+            line-height: 1.3;
+        }
+        .book-info .subtitle {
+            font-size: 1rem;
+            color: #555;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        /* Meta grid */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            gap: 0.4rem 1rem;
+            font-size: 0.9rem;
+        }
+        .meta-grid .label { font-weight: 600; color: #444; white-space: nowrap; }
+        .meta-grid .value { color: #333; }
+
+        /* Rating */
+        .stars { color: #e6a817; letter-spacing: 1px; }
+
+        /* Categories */
+        .categories { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.2rem; }
+        .category-tag {
+            background: #eaf3fb;
+            color: #1a3a5c;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.78rem;
+            border: 1px solid #c2ddf5;
+        }
+
+        /* Links row */
+        .book-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid #e8edf3;
+            background: #f8fbfe;
+        }
+        .book-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: opacity 0.15s;
+        }
+        .book-links a:hover { opacity: 0.8; }
+        .btn-primary   { background: #2e86c1; color: #fff; }
+        .btn-secondary { background: #fff; color: #1a3a5c; border: 1px solid #2e86c1; }
+
+        /* Description */
+        .book-description { padding: 1.75rem 2rem; }
+        .book-description h3 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #1a3a5c;
+            margin-bottom: 0.85rem;
+            border-bottom: 2px solid #d0e6f7;
+            padding-bottom: 0.4rem;
+        }
+        .desc-text {
+            font-size: 0.94rem;
+            color: #444;
+            line-height: 1.75;
+        }
+        .desc-text p { margin-bottom: 0.75rem; }
+
+        /* Extra metadata */
+        .book-extra {
+            padding: 1.5rem 2rem;
+            background: #f8fbfe;
+            border-top: 1px solid #e8edf3;
+            border-radius: 0 0 8px 8px;
+        }
+        .book-extra h3 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #1a3a5c;
+            margin-bottom: 0.85rem;
+            border-bottom: 2px solid #d0e6f7;
+            padding-bottom: 0.4rem;
+        }
+        .extra-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem 1.5rem;
+            font-size: 0.88rem;
+        }
+        .extra-grid .label { font-weight: 600; color: #555; }
+        .extra-grid .value { color: #333; }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.83rem;
+            color: #777;
+            border-top: 1px solid #dde;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 600px) {
+            .book-top { flex-direction: column; align-items: center; gap: 1.25rem; }
+            .book-info h2 { font-size: 1.25rem; }
+            .meta-grid { grid-template-columns: 1fr; }
+            .meta-grid .label { margin-top: 0.5rem; }
+        }
+    </style>
 </head>
 <body>
-    <main>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="exercises.html">Exercises</a></li>
-                <li><a href="projects.html">Projects</a></li>  
-                <li><a href="https://ccse.kennesaw.edu/it/">CCSE Department of IT Website</a></li>
-            </ul>
-        </nav>
-    </main>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="google-book.html" class="active">Single Book</a></li>
+            <li><a href="google-books-search.html">Book Search</a></li>
+            <li><a href="https://ccse.kennesaw.edu/it/" target="_blank" rel="noopener">CCSE IT Website</a></li>
+        </ul>
+    </nav>
+
     <header>
-        <h1>Google Books API - Single Book Details</h1>
-        <p>IT 4403 - Individual Project - Milestone 1</p>
+        <h1>Google Books &mdash; Single Book Details</h1>
+        <p>IT 4403 &mdash; Individual Project &mdash; Milestone 1</p>
     </header>
 
     <main>
-        <section>
-            <h2>Book Details</h2>
-            <div id="book-container">
-                <div id="book-cover"></div>
-                <h3 id="book-title">Loading title...</h3>
-                <h4 id="book-subtitle"></h4>
+        <div id="status-message">Loading book data&hellip;</div>
 
-                <p><strong>Author(s):</strong> <span id="book-authors"></span></p>
-                <p><strong>Publisher:</strong> <span id="book-publisher"></span></p>
-                <p><strong>Published:</strong> <span id="book-published"></span></p>
-                <p><strong>Pages:</strong> <span id="book-pages"></span></p>
-                <p><strong>Language:</strong> <span id="book-language"></span></p>
-                <!-- Book details will be dynamically inserted here -->
+        <article id="book-card" aria-label="Book details">
 
-                <h3>Description</h3>
-                <div id="book-description">Loading description...</div>
+            <div class="book-top">
+                <div class="book-cover" id="book-cover"></div>
+                <div class="book-info">
+                    <h2 id="book-title"></h2>
+                    <p class="subtitle" id="book-subtitle"></p>
+                    <div class="meta-grid">
+                        <span class="label">Author(s)</span>
+                        <span class="value" id="book-authors"></span>
+
+                        <span class="label">Publisher</span>
+                        <span class="value" id="book-publisher"></span>
+
+                        <span class="label">Published</span>
+                        <span class="value" id="book-published"></span>
+
+                        <span class="label">Pages</span>
+                        <span class="value" id="book-pages"></span>
+
+                        <span class="label">Language</span>
+                        <span class="value" id="book-language"></span>
+
+                        <span class="label" id="rating-label" style="display:none">Rating</span>
+                        <span class="value"  id="book-rating"  style="display:none"></span>
+
+                        <span class="label" id="categories-label" style="display:none">Categories</span>
+                        <div  class="value categories" id="book-categories" style="display:none"></div>
+                    </div>
+                </div>
             </div>
-        </section>
+
+            <div class="book-links" id="book-links"></div>
+
+            <div class="book-description">
+                <h3>Description</h3>
+                <div class="desc-text" id="book-description"></div>
+            </div>
+
+            <div class="book-extra">
+                <h3>Additional Information</h3>
+                <div class="extra-grid" id="book-extra-grid"></div>
+            </div>
+
+        </article>
     </main>
+
+    <footer>
+        <p>
+            IT 4403 Web Technologies &amp; Applications &mdash;
+            DJENKEU EDOU Livyo Kurtys &mdash;
+            Kennesaw State University &mdash;
+            <span id="footer-year"></span>
+        </p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        // Google Books image URLs are http:// — upgrade to https:// to prevent
+        // mixed-content blocks when the page is served over HTTPS (e.g. Azure).
+        function secureUrl(url) {
+            return url ? url.replace(/^http:\/\//i, 'https://') : '';
+        }
+
+        // Convert a numeric 0–5 rating into filled/empty star HTML.
+        function renderStars(rating) {
+            var full  = Math.floor(rating);
+            var half  = (rating - full) >= 0.5 ? 1 : 0;
+            var empty = 5 - full - half;
+            return '<span class="stars">' +
+                '&#9733;'.repeat(full) +
+                (half ? '&#9734;' : '') +
+                '&#9734;'.repeat(empty) +
+                '</span>\u00a0' + rating.toFixed(1);
+        }
+
+        $(function () {
+
+            $.getJSON('google-books-book.json', function (data) {
+                var v = data.volumeInfo || {};
+
+                // Title & subtitle
+                $('#book-title').text(v.title || 'Unknown Title');
+                if (v.subtitle) {
+                    $('#book-subtitle').text(v.subtitle);
+                } else {
+                    $('#book-subtitle').hide();
+                }
+
+                // Cover image
+                var thumbUrl = (v.imageLinks && v.imageLinks.thumbnail)
+                    ? secureUrl(v.imageLinks.thumbnail)
+                    : null;
+                if (thumbUrl) {
+                    $('#book-cover').html(
+                        $('<img>').attr('src', thumbUrl).attr('alt', (v.title || 'Book') + ' cover')
+                    );
+                } else {
+                    $('#book-cover').html('<div class="no-cover">No cover image available</div>');
+                }
+
+                // Core metadata
+                $('#book-authors').text(
+                    (v.authors && v.authors.length) ? v.authors.join(', ') : 'Unknown'
+                );
+                $('#book-publisher').text(v.publisher || 'Unknown');
+                $('#book-published').text(v.publishedDate || 'Unknown');
+                $('#book-pages').text(v.pageCount ? v.pageCount + ' pages' : 'N/A');
+                $('#book-language').text(v.language ? v.language.toUpperCase() : 'N/A');
+
+                // Rating
+                if (v.averageRating) {
+                    var ratingHtml = renderStars(v.averageRating);
+                    if (v.ratingsCount) {
+                        ratingHtml += ' <small style="color:#888">(' + v.ratingsCount +
+                            ' review' + (v.ratingsCount !== 1 ? 's' : '') + ')</small>';
+                    }
+                    $('#book-rating').html(ratingHtml).show();
+                    $('#rating-label').show();
+                }
+
+                // Categories
+                if (v.categories && v.categories.length) {
+                    var catHtml = v.categories.map(function (c) {
+                        return '<span class="category-tag">' + $('<span>').text(c).html() + '</span>';
+                    }).join('');
+                    $('#book-categories').html(catHtml).show();
+                    $('#categories-label').show();
+                }
+
+                // External links
+                var linksHtml = '';
+                if (v.previewLink) {
+                    linksHtml += '<a href="' + secureUrl(v.previewLink) + '" ' +
+                        'target="_blank" rel="noopener" class="btn-primary">' +
+                        '&#128214; Preview This Book</a>';
+                }
+                if (v.infoLink) {
+                    linksHtml += '<a href="' + secureUrl(v.infoLink) + '" ' +
+                        'target="_blank" rel="noopener" class="btn-secondary">' +
+                        '&#8505; More Info</a>';
+                }
+                if (v.canonicalVolumeLink) {
+                    linksHtml += '<a href="' + secureUrl(v.canonicalVolumeLink) + '" ' +
+                        'target="_blank" rel="noopener" class="btn-secondary">' +
+                        '&#128279; Canonical Link</a>';
+                }
+                if (linksHtml) {
+                    $('#book-links').html(linksHtml);
+                } else {
+                    $('#book-links').hide();
+                }
+
+                // Description (contains HTML-encoded content from the API)
+                $('#book-description').html(
+                    v.description || '<em>No description available.</em>'
+                );
+
+                // Additional metadata
+                var extras = [];
+                if (v.printType)       extras.push(['Print Type',      v.printType]);
+                if (v.maturityRating)  extras.push(['Maturity Rating', v.maturityRating.replace(/_/g, ' ')]);
+                if (data.id)           extras.push(['Volume ID',       data.id]);
+                if (v.contentVersion)  extras.push(['Content Version', v.contentVersion]);
+                if (data.saleInfo && data.saleInfo.saleability)
+                    extras.push(['Sale Status', data.saleInfo.saleability.replace(/_/g, ' ')]);
+                if (data.accessInfo) {
+                    if (data.accessInfo.viewability)
+                        extras.push(['Viewability', data.accessInfo.viewability]);
+                    if (data.accessInfo.epub && data.accessInfo.epub.isAvailable)
+                        extras.push(['EPUB', 'Available']);
+                    if (data.accessInfo.pdf && data.accessInfo.pdf.isAvailable)
+                        extras.push(['PDF', 'Available']);
+                }
+
+                if (extras.length) {
+                    var extraHtml = extras.map(function (pair) {
+                        return '<span class="label">' + pair[0] + '</span>' +
+                               '<span class="value">' + $('<span>').text(pair[1]).html() + '</span>';
+                    }).join('');
+                    $('#book-extra-grid').html(extraHtml);
+                } else {
+                    $('#book-extra-grid').closest('.book-extra').hide();
+                }
+
+                // Reveal the card
+                $('#status-message').hide();
+                $('#book-card').show();
+
+            }).fail(function () {
+                $('#status-message')
+                    .addClass('error')
+                    .text('Error: could not load google-books-book.json. ' +
+                          'Ensure the file is in the same directory and you are ' +
+                          'serving the page from a web server (not file://).');
+            });
+        });
+
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+    </script>
+
 </body>
 </html>

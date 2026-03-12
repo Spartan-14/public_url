@@ -3,97 +3,204 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>IT 4403 — Student Portfolio</title>
+    <title>IT 4403 — Individual Project Portfolio</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <!--
-        style.css contains all the visual design for the entire site.
-        Every page links to this same file so the look stays consistent
-        across index.html, google-book.html, and all future pages.
-    -->
-    <link rel="stylesheet" href="style.css" />
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+            line-height: 1.6;
+        }
+
+        /* ── Navigation ── */
+        nav {
+            background: #1a3a5c;
+            padding: 0 1.5rem;
+        }
+        nav ul {
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        nav ul li a {
+            display: block;
+            padding: 0.9rem 1.1rem;
+            color: #cce0f5;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+        nav ul li a:hover { background: #24507a; color: #fff; }
+        nav ul li a.active { background: #2e86c1; color: #fff; }
+
+        /* ── Header ── */
+        header {
+            background: linear-gradient(135deg, #1a3a5c 0%, #2e86c1 100%);
+            color: #fff;
+            text-align: center;
+            padding: 3rem 1.5rem 2.5rem;
+        }
+        header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.4rem; }
+        header p  { font-size: 1rem; opacity: 0.85; }
+
+        /* ── Main content ── */
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+        }
+
+        /* ── Section cards ── */
+        section {
+            background: #fff;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            padding: 1.75rem 2rem;
+        }
+        section h2 {
+            font-size: 1.1rem;
+            color: #1a3a5c;
+            border-bottom: 2px solid #d0e6f7;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* ── About grid ── */
+        dl.about-grid {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            gap: 0.55rem 1.5rem;
+            align-items: baseline;
+        }
+        dl.about-grid dt {
+            font-weight: 600;
+            color: #444;
+            white-space: nowrap;
+        }
+        dl.about-grid dd { color: #333; }
+        dl.about-grid a { color: #2e86c1; text-decoration: none; }
+        dl.about-grid a:hover { text-decoration: underline; }
+
+        /* ── Disclaimer ── */
+        .disclaimer {
+            background: #fffbea;
+            border-left: 4px solid #f0c040;
+            padding: 1rem 1.25rem;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.7;
+        }
+        .disclaimer strong { color: #333; display: block; margin-bottom: 0.35rem; }
+
+        /* ── Link lists ── */
+        ul.link-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        ul.link-list li a {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.6rem 0.9rem;
+            border-radius: 4px;
+            color: #1a3a5c;
+            text-decoration: none;
+            font-size: 0.95rem;
+            border: 1px solid #dde8f4;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        ul.link-list li a:hover {
+            background: #eaf3fb;
+            border-color: #2e86c1;
+        }
+        ul.link-list li a .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #2e86c1;
+            flex-shrink: 0;
+        }
+        ul.link-list li a.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            cursor: default;
+        }
+        ul.link-list li a small {
+            margin-left: auto;
+            font-size: 0.8rem;
+            color: #888;
+            font-weight: 400;
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.83rem;
+            color: #777;
+            border-top: 1px solid #dde;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.4rem; }
+            dl.about-grid { grid-template-columns: 1fr; }
+            dl.about-grid dt { margin-top: 0.75rem; }
+        }
+    </style>
 </head>
 <body>
 
-    <!--
-        ════════════════════════════════════════════════════════
-        NAVIGATION
-        The nav appears at the top of every page on this site.
-        Add class="active" to the link that matches the current
-        page so the visitor always knows where they are.
-        ════════════════════════════════════════════════════════
-    -->
     <nav>
         <ul>
             <li><a href="index.html" class="active">Home</a></li>
-            <li><a href="exercises.html">Exercises</a></li>
-            <li><a href="projects.html">Projects</a></li>
             <li><a href="google-book.html">Single Book</a></li>
             <li><a href="google-books-search.html">Book Search</a></li>
             <li><a href="https://ccse.kennesaw.edu/it/" target="_blank" rel="noopener">CCSE IT Website</a></li>
         </ul>
     </nav>
 
-    <!--
-        ════════════════════════════════════════════════════════
-        HEADER — Project identity
-        This is the first thing a visitor sees. It answers the
-        question "what is this and who made it?" immediately.
-        ════════════════════════════════════════════════════════
-    -->
     <header>
         <h1>Web Technologies &amp; Applications</h1>
-        <!--
-            TODO: Replace "Student Name" with your actual full name
-            before pushing to GitHub.
-        -->
-        <p>Individual Project Portfolio &mdash; Student Name</p>
+        <p>Individual Project Portfolio &mdash; DJENKEU EDOU Livyo Kurtys</p>
     </header>
 
-    <!--
-        ════════════════════════════════════════════════════════
-        MAIN CONTENT
-        Organised into four clearly separated sections:
-          1. About  — project overview and affiliation
-          2. Disclaimer — required academic statement
-          3. Lab Work — links to practice exercises
-          4. Individual Project Work — links to milestones
-        ════════════════════════════════════════════════════════
-    -->
     <main>
 
-        <!-- ── SECTION 1: About ─────────────────────────────────────
-             Satisfies the requirements for: project title, your name,
-             site description, affiliation, and course information.
-        ──────────────────────────────────────────────────────────── -->
+        <!-- ── SECTION 1: About ── -->
         <section aria-labelledby="about-heading">
             <h2 id="about-heading">About This Project</h2>
-
-            <!--
-                A definition list (<dl>) is the semantically correct
-                HTML element for label-value pairs like this.
-                The about-grid class in style.css lays these out as a
-                two-column grid: labels on the left, values on the right.
-            -->
             <dl class="about-grid">
 
                 <dt>Project Title</dt>
-                <dd>Web Technologies &amp; Applications — Individual Project</dd>
+                <dd>Web Technologies &amp; Applications &mdash; Individual Project</dd>
 
-                <dt>Your Name</dt>
-                <!-- TODO: Replace with your full name. -->
-                <dd>Student Name</dd>
+                <dt>Student Name</dt>
+                <dd>DJENKEU EDOU Livyo Kurtys</dd>
 
                 <dt>Description</dt>
                 <dd>
-                    A multi-milestone individual project that progressively builds a
-                    complete single-page application (SPA). Each milestone adds a new
-                    layer of functionality — starting with reading and displaying JSON
-                    data using JavaScript and jQuery, and building toward a fully
-                    interactive web application.
+                    A four-milestone individual project that progressively builds a complete
+                    single-page application (SPA) for searching and displaying book information
+                    from the Google Books public API. Each milestone adds a new layer of
+                    functionality, starting with static JSON data display and culminating in a
+                    fully interactive, AJAX-driven web application.
                 </dd>
 
                 <dt>University</dt>
-                <!-- TODO: Replace if different. -->
                 <dd>Kennesaw State University</dd>
 
                 <dt>Affiliation</dt>
@@ -104,15 +211,9 @@
 
                 <dt>Course</dt>
                 <dd>
-                    IT 4403 — Web Technologies &amp; Applications &mdash;
-                    <!--
-                        This is the "descriptive link to the CCSE IT website"
-                        required by the milestone. The link text describes where
-                        it goes rather than just saying "click here", which is
-                        better for accessibility and clearer for grading.
-                    -->
+                    IT 4403 &mdash; Web Technologies &amp; Applications &mdash;
                     <a href="https://ccse.kennesaw.edu/it/" target="_blank" rel="noopener">
-                        Visit the CCSE Department of IT Website
+                        Visit the CCSE Department of Information Technology Website
                     </a>
                 </dd>
 
@@ -120,144 +221,107 @@
         </section>
 
 
-        <!-- ── SECTION 2: Disclaimer ────────────────────────────────
-             Required by the milestone spec. Uses the .disclaimer class
-             from style.css which gives it the yellow left-border treatment.
-        ──────────────────────────────────────────────────────────── -->
+        <!-- ── SECTION 2: Disclaimer ── -->
         <section aria-labelledby="disclaimer-heading">
+            <h2 id="disclaimer-heading">Disclaimer</h2>
             <div class="disclaimer">
-                <strong id="disclaimer-heading">Student Project Website Disclaimer</strong>
-                This is a student project website created for educational purposes as
-                part of the IT 4403 Web Technologies &amp; Applications course at
-                Kennesaw State University. The content on this site is intended solely
-                for academic assessment and does not represent the views, policies, or
-                endorsement of any institution or organisation. All data displayed is
-                sourced from publicly available APIs and sample datasets used strictly
-                for learning purposes. External links are provided for reference only.
+                <strong>Student Project Website Disclaimer</strong>
+                This is a student project website created for educational purposes as part of the
+                IT 4403 Web Technologies &amp; Applications course at Kennesaw State University.
+                The content on this site is intended solely for academic assessment and does not
+                represent the views, policies, or endorsement of any institution or organisation.
+                All data displayed is sourced from publicly available APIs and sample datasets
+                used strictly for learning purposes. External links are provided for reference only.
             </div>
         </section>
 
 
-        <!-- ── SECTION 3: Lab Work ──────────────────────────────────
-             "Clearly labeled section titled 'Lab Work' providing links
-             to all practice lab works of the course."
-
-             The section heading matches the required label exactly.
-             Add or update the <li> entries as you complete each lab.
-        ──────────────────────────────────────────────────────────── -->
+        <!-- ── SECTION 3: Lab Work ── -->
         <section aria-labelledby="lab-heading">
             <h2 id="lab-heading">Lab Work</h2>
-            <p>
-                The following links lead to practice exercises completed throughout
-                the course. Each lab builds foundational skills used in the
-                individual project milestones.
+            <p style="margin-bottom: 1rem; font-size: 0.93rem; color: #555;">
+                The following links lead to practice exercises completed throughout the course.
+                Each lab builds foundational skills used in the individual project milestones.
             </p>
-
             <ul class="link-list">
-                <!--
-                    TODO: Update each href to point to your actual lab pages.
-                    Add a new <li> for each lab as you complete it.
-                    The <span class="dot"> gives each item the small navy
-                    bullet defined in style.css.
-                -->
-                <li>
-                    <a href="exercises.html">
-                        <span class="dot"></span>
-                        Lab Exercises — HTML, CSS &amp; JavaScript Practice
-                    </a>
-                </li>
                 <li>
                     <a href="lab1.html">
                         <span class="dot"></span>
-                        Lab 1 — Introduction to HTML &amp; Document Structure
+                        Lab 1 &mdash; Introduction to HTML &amp; Document Structure
                     </a>
                 </li>
                 <li>
                     <a href="lab2.html">
                         <span class="dot"></span>
-                        Lab 2 — CSS Styling &amp; the Box Model
+                        Lab 2 &mdash; CSS Styling &amp; the Box Model
                     </a>
                 </li>
                 <li>
                     <a href="lab3.html">
                         <span class="dot"></span>
-                        Lab 3 — JavaScript Fundamentals &amp; DOM Manipulation
+                        Lab 3 &mdash; JavaScript Fundamentals &amp; DOM Manipulation
                     </a>
                 </li>
                 <li>
                     <a href="lab4.html">
                         <span class="dot"></span>
-                        Lab 4 — jQuery Selectors, Events &amp; AJAX
+                        Lab 4 &mdash; jQuery Selectors, Events &amp; AJAX
                     </a>
                 </li>
                 <li>
                     <a href="lab5.html">
                         <span class="dot"></span>
-                        Lab 5 — JSON Data &amp; Dynamic Page Rendering
+                        Lab 5 &mdash; JSON Data &amp; Dynamic Page Rendering
                     </a>
                 </li>
             </ul>
         </section>
 
 
-        <!-- ── SECTION 4: Individual Project Work ───────────────────
-             "Clearly labeled section titled 'Individual Project Work'
-             providing links to all Milestones of the course."
-
-             Milestone 1 is the current milestone and its two sub-pages
-             are linked directly here so the grader can reach them in
-             one click from the home page.
-        ──────────────────────────────────────────────────────────── -->
+        <!-- ── SECTION 4: Individual Project Work ── -->
         <section aria-labelledby="project-heading">
             <h2 id="project-heading">Individual Project Work</h2>
-            <p>
-                This section links to all completed milestones of the individual
-                project. Each milestone builds on the previous one, progressively
-                constructing a fully functional single-page application.
+            <p style="margin-bottom: 1rem; font-size: 0.93rem; color: #555;">
+                This section links to all completed milestones of the individual project.
+                Each milestone builds on the previous one, progressively constructing a fully
+                functional book search single-page application.
             </p>
-
             <ul class="link-list">
 
-                <!--
-                    MILESTONE 1 — Current milestone.
-                    Both data display pages required by the spec are linked
-                    here so the grader can reach them directly.
-                -->
                 <li>
                     <a href="google-book.html">
                         <span class="dot"></span>
-                        Milestone 1 — Single Book Display
-                        <small style="color: #888; font-weight: 400; margin-left: 6px;">
-                            (google-books-book.json)
-                        </small>
+                        Milestone 1 &mdash; Single Book Display
+                        <small>(google-books-book.json)</small>
                     </a>
                 </li>
                 <li>
                     <a href="google-books-search.html">
                         <span class="dot"></span>
-                        Milestone 1 — Book Search Results
-                        <small style="color: #888; font-weight: 400; margin-left: 6px;">
-                            (google-books-search.json)
-                        </small>
+                        Milestone 1 &mdash; Book Search Results
+                        <small>(google-books-search.json)</small>
                     </a>
                 </li>
 
-                <!--
-                    MILESTONES 2 & 3 — Not yet completed.
-                    Shown but dimmed so the grader can see the structure
-                    is planned. Remove the inline style and update the href
-                    when each milestone is complete.
-                -->
                 <li>
-                    <a href="#" style="opacity: 0.4; pointer-events: none; cursor: default;">
+                    <a href="#" class="disabled">
                         <span class="dot"></span>
-                        Milestone 2 — Coming Soon
+                        Milestone 2 &mdash; Google Books API Integration
+                        <small>Coming soon</small>
                     </a>
                 </li>
                 <li>
-                    <a href="#" style="opacity: 0.4; pointer-events: none; cursor: default;">
+                    <a href="#" class="disabled">
                         <span class="dot"></span>
-                        Milestone 3 — Coming Soon
+                        Milestone 3 &mdash; AJAX &amp; AJAJ Operations
+                        <small>Coming soon</small>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="disabled">
+                        <span class="dot"></span>
+                        Milestone 4 &mdash; SPA User Interface Improvements
+                        <small>Coming soon</small>
                     </a>
                 </li>
 
@@ -266,29 +330,16 @@
 
     </main>
 
-
-    <!--
-        ════════════════════════════════════════════════════════
-        FOOTER
-        ════════════════════════════════════════════════════════
-    -->
     <footer>
-        <!--
-            The year is inserted automatically by the small script below
-            so you never have to remember to update it manually.
-            TODO: Replace "Student Name" with your actual name.
-        -->
         <p>
             IT 4403 Web Technologies &amp; Applications &mdash;
-            Student Name &mdash; Kennesaw State University &mdash;
+            DJENKEU EDOU Livyo Kurtys &mdash;
+            Kennesaw State University &mdash;
             <span id="footer-year"></span>
         </p>
     </footer>
 
     <script>
-        // Automatically write the current year into the footer.
-        // This is plain JavaScript — no jQuery needed for something
-        // this simple. The script runs once when the page loads.
         document.getElementById('footer-year').textContent = new Date().getFullYear();
     </script>
 
