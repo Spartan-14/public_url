@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Bookshelf — IT 4403 Milestone 2</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f4f6f9; color: #222; line-height: 1.6;
+        }
+
+        /* ── Navigation ── */
+        nav { background: #1a3a5c; padding: 0 1.5rem; }
+        nav ul {
+            display: flex; flex-wrap: wrap; list-style: none;
+            max-width: 1100px; margin: 0 auto;
+        }
+        nav ul li a {
+            display: block; padding: 0.9rem 1.1rem;
+            color: #cce0f5; text-decoration: none;
+            font-size: 0.9rem; font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+        nav ul li a:hover  { background: #24507a; color: #fff; }
+        nav ul li a.active { background: #2e86c1; color: #fff; }
+
+        /* ── Header ── */
+        header {
+            background: linear-gradient(135deg, #1a3a5c 0%, #2e86c1 100%);
+            color: #fff; text-align: center;
+            padding: 2.5rem 1.5rem 2rem;
+        }
+        header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.3rem; }
+        header p  { font-size: 0.95rem; opacity: 0.8; }
+
+        /* ── Main ── */
+        main { max-width: 1100px; margin: 2rem auto; padding: 0 1.25rem; }
+
+        /* ── Section header ── */
+        .section-header {
+            background: #fff; border-radius: 8px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+            padding: 1.25rem 1.75rem; margin-bottom: 1.5rem;
+            display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+        }
+        .section-header h2 {
+            font-size: 1.1rem; color: #1a3a5c;
+            text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .shelf-badge {
+            background: #eaf3fb; color: #1a3a5c;
+            border: 1px solid #c2ddf5;
+            padding: 0.2rem 0.75rem; border-radius: 12px;
+            font-size: 0.83rem; font-weight: 600;
+        }
+
+        /* ── Status ── */
+        #status-message {
+            text-align: center; padding: 3rem;
+            color: #666; font-size: 0.95rem;
+        }
+        #status-message.error { color: #c0392b; }
+
+        /* ── Book grid ── */
+        #shelf-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.1rem;
+        }
+
+        /* ── Book card ── */
+        .book-card {
+            background: #fff; border-radius: 8px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+            display: flex; flex-direction: column; overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.15s;
+        }
+        .book-card:hover {
+            box-shadow: 0 4px 14px rgba(0,0,0,0.13);
+            transform: translateY(-2px);
+        }
+        .card-thumb {
+            background: #d0e6f7;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1rem; min-height: 160px;
+        }
+        .card-thumb img {
+            max-height: 140px; max-width: 110px;
+            border-radius: 3px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.22);
+            display: block;
+        }
+        .card-thumb .no-thumb {
+            color: #567; font-size: 0.75rem; text-align: center;
+        }
+        .card-body {
+            padding: 0.9rem 1rem; flex: 1;
+            display: flex; flex-direction: column; gap: 0.3rem;
+        }
+        .card-title a {
+            font-size: 0.9rem; font-weight: 700;
+            color: #1a3a5c; text-decoration: none; line-height: 1.35;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-title a:hover { text-decoration: underline; }
+        .card-authors {
+            font-size: 0.8rem; color: #555;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-meta { font-size: 0.77rem; color: #888; }
+        .card-rating { font-size: 0.8rem; color: #e6a817; }
+
+        /* Card footer */
+        .card-footer {
+            padding: 0.65rem 1rem; border-top: 1px solid #eef1f5;
+        }
+        .card-footer a {
+            font-size: 0.8rem; font-weight: 500;
+            padding: 0.3rem 0.7rem; border-radius: 4px;
+            text-decoration: none; background: #2e86c1; color: #fff;
+            transition: opacity 0.15s;
+        }
+        .card-footer a:hover { opacity: 0.8; }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center; padding: 1.5rem;
+            font-size: 0.83rem; color: #777;
+            border-top: 1px solid #dde; margin-top: 2rem;
+        }
+
+        @media (max-width: 900px) { #shelf-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 600px) {
+            #shelf-grid { grid-template-columns: repeat(2, 1fr); }
+            header h1 { font-size: 1.35rem; }
+        }
+        @media (max-width: 380px) { #shelf-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="my-bookshelf.html" class="active">My Bookshelf</a></li>
+            <li><a href="../index.html">&#8592; Back to Portfolio</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>&#128218; My Bookshelf</h1>
+        <p>IT 4403 &mdash; Individual Project &mdash; Milestone 2</p>
+    </header>
+
+    <main>
+
+        <div class="section-header">
+            <h2>My Public Google Books Collection</h2>
+            <span class="shelf-badge" id="shelf-count">Loading&hellip;</span>
+        </div>
+
+        <div id="status-message">Loading bookshelf&hellip;</div>
+        <div id="shelf-grid" role="list" aria-label="My bookshelf"></div>
+
+    </main>
+
+    <footer>
+        <p>
+            IT 4403 Web Technologies &amp; Applications &mdash;
+            DJENKEU EDOU Livyo Kurtys &mdash;
+            Kennesaw State University &mdash;
+            <span id="footer-year"></span>
+        </p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        var API_KEY  = 'AIzaSyCDZzKagXtOKD0P0XEtdFfVvlmm5vinX88';
+        var API_BASE = 'https://www.googleapis.com/books/v1/volumes';
+
+        // Volume IDs copied from the public Google Books bookshelf.
+        // To update: visit a book on books.google.com and copy the id= value from the URL.
+        var SHELF_IDS = [
+            'kRqeDwAAQBAJ',
+            'UTGnopblxt8C',
+            'P_zMW3EHnTEC'
+        ];
+
+        function secureUrl(url) {
+            return url ? url.replace(/^http:\/\//i, 'https://') : '';
+        }
+        function esc(str) {
+            return $('<span>').text(str || '').html();
+        }
+        function stars(rating) {
+            var full  = Math.floor(rating);
+            var half  = (rating - full) >= 0.5 ? 1 : 0;
+            var empty = 5 - full - half;
+            return '&#9733;'.repeat(full) +
+                   (half ? '&#9734;' : '') +
+                   '&#9734;'.repeat(empty) +
+                   '\u00a0' + rating.toFixed(1);
+        }
+
+        // Render a single book card and append to the grid
+        function appendCard(data) {
+            var v    = data.volumeInfo || {};
+            var sale = data.saleInfo   || {};
+
+            var thumbUrl = null;
+            if (v.imageLinks) {
+                thumbUrl = v.imageLinks.thumbnail || v.imageLinks.smallThumbnail || null;
+            }
+            var thumbHtml = thumbUrl
+                ? '<img src="' + esc(secureUrl(thumbUrl)) + '" alt="' + esc(v.title) + ' cover" />'
+                : '<div class="no-thumb">No cover<br>available</div>';
+
+            var authors = (v.authors && v.authors.length)
+                ? v.authors.join(', ') : 'Unknown author';
+
+            var metaParts = [];
+            if (v.publisher)     metaParts.push(esc(v.publisher));
+            if (v.publishedDate) metaParts.push(esc(v.publishedDate.substring(0, 4)));
+            if (v.pageCount)     metaParts.push(v.pageCount + ' pages');
+
+            var ratingHtml = v.averageRating
+                ? '<p class="card-rating">' + stars(v.averageRating) + '</p>'
+                : '';
+
+            var priceText = '';
+            if (sale.saleability === 'FOR_SALE' && sale.retailPrice) {
+                var code = sale.retailPrice.currencyCode;
+                var sym  = code === 'USD' ? '$' : code + '\u00a0';
+                priceText = sym + parseFloat(sale.retailPrice.amount).toFixed(2);
+            }
+
+            var card =
+                '<div class="book-card" role="listitem">' +
+                    '<div class="card-thumb">' + thumbHtml + '</div>' +
+                    '<div class="card-body">' +
+                        '<p class="card-title">' +
+                            '<a href="book-details.html?id=' + esc(data.id) + '">' +
+                                esc(v.title || 'Unknown Title') +
+                            '</a>' +
+                        '</p>' +
+                        '<p class="card-authors">' + esc(authors) + '</p>' +
+                        (metaParts.length ? '<p class="card-meta">' + metaParts.join(' &bull; ') + '</p>' : '') +
+                        ratingHtml +
+                        (priceText ? '<p class="card-meta" style="color:#27ae60;font-weight:600">' + esc(priceText) + '</p>' : '') +
+                    '</div>' +
+                    '<div class="card-footer">' +
+                        '<a href="book-details.html?id=' + esc(data.id) + '">View Details</a>' +
+                    '</div>' +
+                '</div>';
+
+            $('#shelf-grid').append(card);
+        }
+
+        $(function () {
+
+            var loaded = 0;
+            var failed = 0;
+            var total  = SHELF_IDS.length;
+
+            if (total === 0) {
+                $('#status-message').text('No books on this shelf yet.');
+                $('#shelf-count').text('0 books');
+                return;
+            }
+
+            // Fetch each book by its volume ID
+            $.each(SHELF_IDS, function (i, volumeId) {
+                $.getJSON(API_BASE + '/' + encodeURIComponent(volumeId), { key: API_KEY })
+
+                .done(function (data) {
+                    appendCard(data);
+                    loaded++;
+                })
+                .fail(function () {
+                    failed++;
+                })
+                .always(function () {
+                    // Once all requests are settled, update UI
+                    if (loaded + failed === total) {
+                        $('#status-message').hide();
+                        var bookWord = loaded === 1 ? 'book' : 'books';
+                        $('#shelf-count').text(loaded + ' ' + bookWord);
+
+                        if (loaded === 0) {
+                            $('#status-message')
+                                .addClass('error')
+                                .text('Could not load any books. Check your API key or volume IDs.')
+                                .show();
+                        }
+                    }
+                });
+            });
+
+        });
+
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Search — IT 4403 Milestone 2</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+            line-height: 1.6;
+        }
+
+        /* ── Navigation ── */
+        nav { background: #1a3a5c; padding: 0 1.5rem; }
+        nav ul {
+            display: flex; flex-wrap: wrap; list-style: none;
+            max-width: 1100px; margin: 0 auto;
+        }
+        nav ul li a {
+            display: block; padding: 0.9rem 1.1rem;
+            color: #cce0f5; text-decoration: none;
+            font-size: 0.9rem; font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+        nav ul li a:hover  { background: #24507a; color: #fff; }
+        nav ul li a.active { background: #2e86c1; color: #fff; }
+
+        /* ── Header ── */
+        header {
+            background: linear-gradient(135deg, #1a3a5c 0%, #2e86c1 100%);
+            color: #fff; text-align: center;
+            padding: 2.5rem 1.5rem 2rem;
+        }
+        header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.3rem; }
+        header p  { font-size: 0.95rem; opacity: 0.8; }
+
+        /* ── Main ── */
+        main { max-width: 1100px; margin: 2rem auto; padding: 0 1.25rem; }
+
+        /* ── Search box ── */
+        .search-panel {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .search-panel h2 {
+            font-size: 1rem; font-weight: 600; color: #1a3a5c;
+            margin-bottom: 1rem; text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .search-row {
+            display: flex; gap: 0.75rem; flex-wrap: wrap;
+        }
+        #search-input {
+            flex: 1; min-width: 200px;
+            padding: 0.65rem 1rem;
+            border: 1px solid #c5d8ec; border-radius: 4px;
+            font-size: 0.95rem; color: #222;
+            outline: none; transition: border-color 0.2s;
+        }
+        #search-input:focus { border-color: #2e86c1; }
+        #search-btn {
+            padding: 0.65rem 1.5rem;
+            background: #2e86c1; color: #fff;
+            border: none; border-radius: 4px;
+            font-size: 0.95rem; font-weight: 600;
+            cursor: pointer; transition: background 0.2s;
+        }
+        #search-btn:hover { background: #1a6fa8; }
+        #search-btn:disabled { background: #a0c4de; cursor: not-allowed; }
+
+        /* ── Results meta bar ── */
+        #results-meta {
+            display: none;
+            align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        #results-meta .count-label {
+            font-size: 0.9rem; color: #555;
+        }
+        #results-meta .count-label strong { color: #1a3a5c; }
+        .pagination-controls {
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        .pagination-controls label {
+            font-size: 0.88rem; color: #555;
+        }
+        #page-select {
+            padding: 0.35rem 0.6rem;
+            border: 1px solid #c5d8ec; border-radius: 4px;
+            font-size: 0.88rem; color: #222;
+            cursor: pointer; background: #fff;
+        }
+        .btn-page {
+            padding: 0.35rem 0.75rem;
+            border: 1px solid #c5d8ec; border-radius: 4px;
+            font-size: 0.85rem; background: #fff;
+            color: #1a3a5c; cursor: pointer;
+            transition: background 0.15s;
+        }
+        .btn-page:hover:not(:disabled) { background: #eaf3fb; }
+        .btn-page:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* ── Status / loading ── */
+        #status-message {
+            text-align: center; padding: 3rem;
+            color: #666; font-size: 0.95rem;
+        }
+        #status-message.error { color: #c0392b; }
+
+        /* ── Book grid ── */
+        #book-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.1rem;
+        }
+
+        /* ── Book card ── */
+        .book-card {
+            background: #fff; border-radius: 8px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.15s;
+        }
+        .book-card:hover {
+            box-shadow: 0 4px 14px rgba(0,0,0,0.13);
+            transform: translateY(-2px);
+        }
+        .card-thumb {
+            background: #d0e6f7;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1rem; min-height: 150px;
+        }
+        .card-thumb img {
+            max-height: 130px; max-width: 100px;
+            border-radius: 3px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.22);
+            display: block;
+        }
+        .card-thumb .no-thumb {
+            color: #567; font-size: 0.75rem; text-align: center;
+        }
+        .card-body { padding: 0.85rem; flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
+        .card-title a {
+            font-size: 0.88rem; font-weight: 700;
+            color: #1a3a5c; text-decoration: none;
+            line-height: 1.35;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-title a:hover { text-decoration: underline; }
+        .card-authors {
+            font-size: 0.78rem; color: #555;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-year { font-size: 0.75rem; color: #888; }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center; padding: 1.5rem;
+            font-size: 0.83rem; color: #777;
+            border-top: 1px solid #dde; margin-top: 2rem;
+        }
+
+        @media (max-width: 900px) { #book-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 600px) {
+            #book-grid { grid-template-columns: repeat(2, 1fr); }
+            header h1 { font-size: 1.35rem; }
+        }
+        @media (max-width: 380px) { #book-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="my-bookshelf.html">My Bookshelf</a></li>
+            <li><a href="../index.html">&#8592; Back to Portfolio</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>&#128214; Book Search</h1>
+        <p>IT 4403 &mdash; Individual Project &mdash; Milestone 2</p>
+    </header>
+
+    <main>
+
+        <!-- Search panel -->
+        <div class="search-panel">
+            <h2>Search Google Books</h2>
+            <div class="search-row">
+                <input type="text" id="search-input"
+                       placeholder="Enter a title, author, or keyword&hellip;"
+                       aria-label="Search books" />
+                <button id="search-btn">Search</button>
+            </div>
+        </div>
+
+        <!-- Results meta: count + pagination -->
+        <div id="results-meta" role="status">
+            <p class="count-label" id="count-label"></p>
+            <div class="pagination-controls">
+                <button class="btn-page" id="btn-prev" disabled>&#8592; Prev</button>
+                <label for="page-select">Page:</label>
+                <select id="page-select" aria-label="Select page"></select>
+                <button class="btn-page" id="btn-next">Next &#8594;</button>
+            </div>
+        </div>
+
+        <!-- Status / loading message -->
+        <div id="status-message">Enter a search term above to find books.</div>
+
+        <!-- Results grid -->
+        <div id="book-grid" role="list" aria-label="Search results"></div>
+
+    </main>
+
+    <footer>
+        <p>
+            IT 4403 Web Technologies &amp; Applications &mdash;
+            DJENKEU EDOU Livyo Kurtys &mdash;
+            Kennesaw State University &mdash;
+            <span id="footer-year"></span>
+        </p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        // API key is restricted to the project's live domain and localhost only.
+        var API_KEY   = 'AIzaSyCDZzKagXtOKD0P0XEtdFfVvlmm5vinX88';
+        var API_BASE  = 'https://www.googleapis.com/books/v1/volumes';
+        var PER_PAGE  = 10;   // results shown per page
+        var MAX_FETCH = 60;   // maximum results to retrieve (Google Books max per call = 40)
+
+        var allResults  = [];  // stores all fetched book items
+        var currentPage = 0;   // 0-indexed
+
+        // Upgrade http:// image URLs to https://
+        function secureUrl(url) {
+            return url ? url.replace(/^http:\/\//i, 'https://') : '';
+        }
+
+        // Escape a string for safe HTML insertion
+        function esc(str) {
+            return $('<span>').text(str || '').html();
+        }
+
+        // Render the current page of results into the grid
+        function renderPage() {
+            var start = currentPage * PER_PAGE;
+            var slice = allResults.slice(start, start + PER_PAGE);
+
+            $('#book-grid').empty();
+
+            $.each(slice, function (i, item) {
+                var v = item.volumeInfo || {};
+                var thumbUrl = (v.imageLinks && v.imageLinks.smallThumbnail)
+                    ? secureUrl(v.imageLinks.smallThumbnail)
+                    : null;
+                var thumbHtml = thumbUrl
+                    ? '<img src="' + esc(thumbUrl) + '" alt="' + esc(v.title) + ' cover" />'
+                    : '<div class="no-thumb">No cover</div>';
+                var authors = (v.authors && v.authors.length)
+                    ? v.authors.join(', ') : 'Unknown author';
+                var year = v.publishedDate
+                    ? v.publishedDate.substring(0, 4) : '';
+
+                var card =
+                    '<div class="book-card" role="listitem">' +
+                        '<div class="card-thumb">' + thumbHtml + '</div>' +
+                        '<div class="card-body">' +
+                            '<p class="card-title">' +
+                                '<a href="book-details.html?id=' + esc(item.id) + '">' +
+                                    esc(v.title || 'Unknown Title') +
+                                '</a>' +
+                            '</p>' +
+                            '<p class="card-authors">' + esc(authors) + '</p>' +
+                            (year ? '<p class="card-year">' + esc(year) + '</p>' : '') +
+                        '</div>' +
+                    '</div>';
+
+                $('#book-grid').append(card);
+            });
+
+            // Update pagination controls
+            var totalPages = Math.ceil(allResults.length / PER_PAGE);
+            $('#btn-prev').prop('disabled', currentPage === 0);
+            $('#btn-next').prop('disabled', currentPage >= totalPages - 1);
+
+            // Rebuild page dropdown
+            $('#page-select').empty();
+            for (var p = 0; p < totalPages; p++) {
+                var opt = $('<option>').val(p).text('Page ' + (p + 1));
+                if (p === currentPage) opt.prop('selected', true);
+                $('#page-select').append(opt);
+            }
+
+            // Update count label
+            var showing_start = start + 1;
+            var showing_end   = Math.min(start + PER_PAGE, allResults.length);
+            $('#count-label').html(
+                'Showing <strong>' + showing_start + '&ndash;' + showing_end +
+                '</strong> of <strong>' + allResults.length + '</strong> results'
+            );
+        }
+
+        // Fetch a batch of results from the Google Books API
+        function fetchBatch(query, startIndex, maxResults) {
+            return $.getJSON(API_BASE, {
+                q:          query,
+                maxResults: maxResults,
+                startIndex: startIndex,
+                key:        API_KEY
+            });
+        }
+
+        // Run a full search: fetch up to 60 results then paginate
+        function runSearch(query) {
+            allResults  = [];
+            currentPage = 0;
+
+            $('#book-grid').empty();
+            $('#results-meta').hide();
+            $('#status-message').removeClass('error').text('Searching\u2026').show();
+            $('#search-btn').prop('disabled', true);
+
+            // First batch: up to 40 results
+            fetchBatch(query, 0, 40).then(function (data) {
+                var items = data.items || [];
+                allResults = items;
+
+                var totalAvailable = data.totalItems || 0;
+
+                if (totalAvailable === 0 || items.length === 0) {
+                    $('#status-message').text('No results found for "' + query + '".');
+                    $('#search-btn').prop('disabled', false);
+                    return;
+                }
+
+                // If more results exist, fetch a second batch (up to 20 more = 60 total)
+                if (totalAvailable > 40 && items.length === 40) {
+                    return fetchBatch(query, 40, 20).then(function (data2) {
+                        if (data2.items) {
+                            allResults = allResults.concat(data2.items);
+                        }
+                    });
+                }
+
+            }).then(function () {
+                if (allResults.length === 0) return;
+
+                $('#status-message').hide();
+                $('#results-meta').css('display', 'flex');
+                renderPage();
+                $('#search-btn').prop('disabled', false);
+
+            }).fail(function (jqXHR) {
+                var msg = 'Error fetching results.';
+                if (jqXHR.status === 403) msg = 'API key error: check key restrictions.';
+                if (jqXHR.status === 429) msg = 'Too many requests. Please wait and try again.';
+                $('#status-message').addClass('error').text(msg);
+                $('#search-btn').prop('disabled', false);
+            });
+        }
+
+        $(function () {
+
+            // Search button click
+            $('#search-btn').on('click', function () {
+                var query = $.trim($('#search-input').val());
+                if (!query) {
+                    $('#status-message').removeClass('error')
+                        .text('Please enter a search term.').show();
+                    return;
+                }
+                runSearch(query);
+            });
+
+            // Allow Enter key in input
+            $('#search-input').on('keydown', function (e) {
+                if (e.key === 'Enter') $('#search-btn').trigger('click');
+            });
+
+            // Pagination: previous
+            $('#btn-prev').on('click', function () {
+                if (currentPage > 0) { currentPage--; renderPage(); }
+            });
+
+            // Pagination: next
+            $('#btn-next').on('click', function () {
+                var totalPages = Math.ceil(allResults.length / PER_PAGE);
+                if (currentPage < totalPages - 1) { currentPage++; renderPage(); }
+            });
+
+            // Pagination: dropdown
+            $('#page-select').on('change', function () {
+                currentPage = parseInt($(this).val(), 10);
+                renderPage();
+            });
+
+        });
+
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+    </script>
+
+</body>
+</html>
