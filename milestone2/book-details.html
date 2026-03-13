@@ -5,31 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Book Details — IT 4403 Milestone 2</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700&display=swap');
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background: #f4f6f9; color: #222; line-height: 1.6;
         }
 
         /* ── Navigation ── */
-        nav { background: #1a3a5c; padding: 0 1.5rem; }
+        nav { background: #06402B; padding: 0 1.5rem; }
         nav ul {
             display: flex; flex-wrap: wrap; list-style: none;
             max-width: 1000px; margin: 0 auto;
         }
         nav ul li a {
             display: block; padding: 0.9rem 1.1rem;
-            color: #cce0f5; text-decoration: none;
+            color: #c8e6d4; text-decoration: none;
             font-size: 0.9rem; font-weight: 500;
             transition: background 0.2s, color 0.2s;
         }
-        nav ul li a:hover  { background: #24507a; color: #fff; }
-        nav ul li a.active { background: #2e86c1; color: #fff; }
+        nav ul li a:hover  { background: #0a5c38; color: #fff; }
+        nav ul li a.active { background: #FFCE1B; color: #030057; }
 
         /* ── Header ── */
         header {
-            background: linear-gradient(135deg, #1a3a5c 0%, #2e86c1 100%);
+            background: linear-gradient(135deg, #06402B 0%, #0a7a4a 100%);
             color: #fff; text-align: center;
             padding: 2.5rem 1.5rem 2rem;
         }
@@ -57,13 +59,13 @@
         /* Back link */
         .back-link {
             display: inline-flex; align-items: center; gap: 0.4rem;
-            background: #f8fbfe; padding: 0.75rem 1.5rem;
-            font-size: 0.88rem; color: #2e86c1;
+            background: #f5faf7; padding: 0.75rem 1.5rem;
+            font-size: 0.88rem; color: #06402B;
             text-decoration: none; border-bottom: 1px solid #e8edf3;
             width: 100%;
             transition: background 0.15s;
         }
-        .back-link:hover { background: #eaf3fb; }
+        .back-link:hover { background: #e8f5ee; }
 
         /* Top: cover + core info */
         .book-top {
@@ -78,13 +80,13 @@
         }
         .book-cover .no-cover {
             width: 140px; height: 200px;
-            background: #d0e6f7; border-radius: 4px;
+            background: #c8e6d4; border-radius: 4px;
             display: flex; align-items: center; justify-content: center;
             font-size: 0.78rem; color: #567; text-align: center; padding: 0.5rem;
         }
         .book-info { flex: 1; }
         .book-info h2 {
-            font-size: 1.5rem; color: #1a3a5c;
+            font-size: 1.5rem; color: #06402B;
             line-height: 1.3; margin-bottom: 0.2rem;
         }
         .book-info .subtitle {
@@ -118,7 +120,7 @@
         /* Links row */
         .book-links {
             display: flex; flex-wrap: wrap; gap: 0.75rem;
-            padding: 1.25rem 2rem; background: #f8fbfe;
+            padding: 1.25rem 2rem; background: #f5faf7;
             border-bottom: 1px solid #e8edf3;
         }
         .book-links a {
@@ -128,32 +130,32 @@
             text-decoration: none; transition: opacity 0.15s;
         }
         .book-links a:hover { opacity: 0.8; }
-        .btn-primary   { background: #2e86c1; color: #fff; }
-        .btn-secondary { background: #fff; color: #1a3a5c; border: 1px solid #2e86c1; }
+        .btn-primary   { background: #06402B; color: #fff; }
+        .btn-secondary { background: #fff; color: #06402B; border: 1px solid #06402B; }
         .btn-buy       { background: #27ae60; color: #fff; }
 
         /* Description */
         .book-description { padding: 1.75rem 2rem; }
         .book-description h3 {
             font-size: 1rem; text-transform: uppercase;
-            letter-spacing: 0.05em; color: #1a3a5c;
+            letter-spacing: 0.05em; color: #06402B;
             margin-bottom: 0.85rem;
-            border-bottom: 2px solid #d0e6f7; padding-bottom: 0.4rem;
+            border-bottom: 2px solid #c8e6d4; padding-bottom: 0.4rem;
         }
         .desc-text { font-size: 0.94rem; color: #444; line-height: 1.8; }
         .desc-text p { margin-bottom: 0.75rem; }
 
         /* Extra info */
         .book-extra {
-            padding: 1.5rem 2rem; background: #f8fbfe;
+            padding: 1.5rem 2rem; background: #f5faf7;
             border-top: 1px solid #e8edf3;
             border-radius: 0 0 8px 8px;
         }
         .book-extra h3 {
             font-size: 1rem; text-transform: uppercase;
-            letter-spacing: 0.05em; color: #1a3a5c;
+            letter-spacing: 0.05em; color: #06402B;
             margin-bottom: 0.85rem;
-            border-bottom: 2px solid #d0e6f7; padding-bottom: 0.4rem;
+            border-bottom: 2px solid #c8e6d4; padding-bottom: 0.4rem;
         }
         .extra-grid {
             display: grid;
@@ -166,9 +168,9 @@
         /* Categories */
         .categories { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.2rem; }
         .cat-tag {
-            background: #eaf3fb; color: #1a3a5c;
+            background: #e8f5ee; color: #06402B;
             padding: 0.2rem 0.6rem; border-radius: 12px;
-            font-size: 0.78rem; border: 1px solid #c2ddf5;
+            font-size: 0.78rem; border: 1px solid #b8e6d0;
         }
 
         /* ── Footer ── */
@@ -260,10 +262,8 @@
 
     <footer>
         <p>
-            IT 4403 Web Technologies &amp; Applications &mdash;
-            DJENKEU EDOU Livyo Kurtys &mdash;
-            Kennesaw State University &mdash;
-            <span id="footer-year"></span>
+            &copy; <span id="footer-year"></span> DJENKEU EDOU Livyo Kurtys &mdash;
+            IT 4403 Individual Project &mdash; Kennesaw State University
         </p>
     </footer>
 

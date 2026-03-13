@@ -5,33 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Book Search — IT 4403 Milestone 2</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700&display=swap');
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background: #f4f6f9;
             color: #222;
             line-height: 1.6;
         }
 
         /* ── Navigation ── */
-        nav { background: #1a3a5c; padding: 0 1.5rem; }
+        nav { background: #06402B; padding: 0 1.5rem; }
         nav ul {
             display: flex; flex-wrap: wrap; list-style: none;
             max-width: 1100px; margin: 0 auto;
         }
         nav ul li a {
             display: block; padding: 0.9rem 1.1rem;
-            color: #cce0f5; text-decoration: none;
+            color: #c8e6d4; text-decoration: none;
             font-size: 0.9rem; font-weight: 500;
             transition: background 0.2s, color 0.2s;
         }
-        nav ul li a:hover  { background: #24507a; color: #fff; }
-        nav ul li a.active { background: #2e86c1; color: #fff; }
+        nav ul li a:hover  { background: #0a5c38; color: #fff; }
+        nav ul li a.active { background: #FFCE1B; color: #030057; }
 
         /* ── Header ── */
         header {
-            background: linear-gradient(135deg, #1a3a5c 0%, #2e86c1 100%);
+            background: linear-gradient(135deg, #06402B 0%, #0a7a4a 100%);
             color: #fff; text-align: center;
             padding: 2.5rem 1.5rem 2rem;
         }
@@ -50,7 +52,7 @@
             margin-bottom: 1.5rem;
         }
         .search-panel h2 {
-            font-size: 1rem; font-weight: 600; color: #1a3a5c;
+            font-size: 1rem; font-weight: 600; color: #06402B;
             margin-bottom: 1rem; text-transform: uppercase;
             letter-spacing: 0.04em;
         }
@@ -60,20 +62,20 @@
         #search-input {
             flex: 1; min-width: 200px;
             padding: 0.65rem 1rem;
-            border: 1px solid #c5d8ec; border-radius: 4px;
+            border: 1px solid #b8e6d0; border-radius: 4px;
             font-size: 0.95rem; color: #222;
             outline: none; transition: border-color 0.2s;
         }
-        #search-input:focus { border-color: #2e86c1; }
+        #search-input:focus { border-color: #06402B; }
         #search-btn {
             padding: 0.65rem 1.5rem;
-            background: #2e86c1; color: #fff;
+            background: #06402B; color: #fff;
             border: none; border-radius: 4px;
             font-size: 0.95rem; font-weight: 600;
             cursor: pointer; transition: background 0.2s;
         }
-        #search-btn:hover { background: #1a6fa8; }
-        #search-btn:disabled { background: #a0c4de; cursor: not-allowed; }
+        #search-btn:hover { background: #044d24; }
+        #search-btn:disabled { background: #7bbf9a; cursor: not-allowed; }
 
         /* ── Results meta bar ── */
         #results-meta {
@@ -85,7 +87,7 @@
         #results-meta .count-label {
             font-size: 0.9rem; color: #555;
         }
-        #results-meta .count-label strong { color: #1a3a5c; }
+        #results-meta .count-label strong { color: #06402B; }
         .pagination-controls {
             display: flex; align-items: center; gap: 0.6rem;
         }
@@ -94,18 +96,18 @@
         }
         #page-select {
             padding: 0.35rem 0.6rem;
-            border: 1px solid #c5d8ec; border-radius: 4px;
+            border: 1px solid #b8e6d0; border-radius: 4px;
             font-size: 0.88rem; color: #222;
             cursor: pointer; background: #fff;
         }
         .btn-page {
             padding: 0.35rem 0.75rem;
-            border: 1px solid #c5d8ec; border-radius: 4px;
+            border: 1px solid #b8e6d0; border-radius: 4px;
             font-size: 0.85rem; background: #fff;
-            color: #1a3a5c; cursor: pointer;
+            color: #06402B; cursor: pointer;
             transition: background 0.15s;
         }
-        .btn-page:hover:not(:disabled) { background: #eaf3fb; }
+        .btn-page:hover:not(:disabled) { background: #e8f5ee; }
         .btn-page:disabled { opacity: 0.4; cursor: not-allowed; }
 
         /* ── Status / loading ── */
@@ -135,7 +137,7 @@
             transform: translateY(-2px);
         }
         .card-thumb {
-            background: #d0e6f7;
+            background: #c8e6d4;
             display: flex; align-items: center; justify-content: center;
             padding: 1rem; min-height: 150px;
         }
@@ -151,7 +153,7 @@
         .card-body { padding: 0.85rem; flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
         .card-title a {
             font-size: 0.88rem; font-weight: 700;
-            color: #1a3a5c; text-decoration: none;
+            color: #06402B; text-decoration: none;
             line-height: 1.35;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -232,10 +234,8 @@
 
     <footer>
         <p>
-            IT 4403 Web Technologies &amp; Applications &mdash;
-            DJENKEU EDOU Livyo Kurtys &mdash;
-            Kennesaw State University &mdash;
-            <span id="footer-year"></span>
+            &copy; <span id="footer-year"></span> DJENKEU EDOU Livyo Kurtys &mdash;
+            IT 4403 Individual Project &mdash; Kennesaw State University
         </p>
     </footer>
 
