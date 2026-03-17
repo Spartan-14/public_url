@@ -1,4 +1,4 @@
-/* ============================================================
+/*
    style.css — IT 4403 Student Portfolio
    
    This stylesheet is shared across every page of the site.
@@ -6,13 +6,13 @@
    (variables) at the top, so changing the palette later only
    ever requires editing this one block rather than hunting
    through the entire file.
-   ============================================================ */
+ */
 
 
-/* ── 1. DESIGN TOKENS (CSS custom properties) ────────────────
-   Think of these as named constants for your design system.
-   The var() function reads them wherever they are needed.
-   ─────────────────────────────────────────────────────────── */
+/*  1. DESIGN TOKENS (CSS custom properties) 
+   These are named constants for your design system. The var()
+     function reads them wherever they are needed.
+ */
 :root {
     /* Your university's navy — the dominant brand color */
     --navy:           #003057;
@@ -64,11 +64,11 @@
 }
 
 
-/* ── 2. RESET & BASE ─────────────────────────────────────────
+/*  2. RESET & BASE 
    A minimal reset that removes browser inconsistencies without
    being so aggressive it removes useful defaults like focus
-   outlines (which are important for accessibility).
-   ─────────────────────────────────────────────────────────── */
+   outlines (which are important for accessibility). DONT CHANGE THIS
+ */
 *,
 *::before,
 *::after {
@@ -82,20 +82,15 @@ html {
 }
 
 body {
-    /* Segoe UI is the native font on Windows (where most students
-       and graders will be), giving a crisp, modern look without
-       loading any external font. The fallbacks ensure it looks
-       good on Mac and Linux too. */
     font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
     font-size: 16px;
     line-height: 1.65;
     color: var(--text-body);
 
-    /* The warm yellow background fills the entire viewport */
+    /* The warm yellow background fills the whole viewport */
     background-color: var(--bg-page);
 
-    /* The 1000px max-width matches your original design intent.
-       The auto horizontal margins center it on wide screens. */
+    /* The auto horizontal margins center The 1000px max-width on wide screens. */
     max-width: 1000px;
     margin: 0 auto;
     padding: var(--space-md) var(--space-md) var(--space-xl);
@@ -121,15 +116,12 @@ a:focus-visible {
 }
 
 
-/* ── 3. NAVIGATION ───────────────────────────────────────────
-   The nav bar is the one element that appears identically on
-   every page of the site, so it needs to feel like a permanent
-   fixture — solid, clear, and anchored to the top of the page.
-
-   Key decision: the navy background goes on the <nav> element
+/*  3. NAVIGATION 
+   The navy background goes on the <nav> element
    itself rather than on individual <li> items. This creates a
    unified bar instead of a row of floating separate buttons.
-   ─────────────────────────────────────────────────────────── */
+   DONT CHANGE THIS
+ */
 nav {
     background-color: var(--navy);
     border-radius: var(--radius-md);
@@ -164,23 +156,20 @@ nav ul li a:hover {
     color: #ffffff;
 }
 
-/* The active class marks the current page in the nav.
-   Apply it in HTML like: <a href="index.html" class="active"> */
+/* The active class marks the current page in the nav. */
 nav ul li a.active {
     background-color: rgba(255, 255, 255, 0.2);
     color: #ffffff;
 }
 
 
-/* ── 4. HEADER ───────────────────────────────────────────────
-   The header is the visual anchor of the page — it needs to
-   command authority without feeling heavy. The navy background
-   does the heavy lifting; the subtle gradient adds just enough
-   depth to prevent it from looking flat.
-   ─────────────────────────────────────────────────────────── */
+/*  4. HEADER 
+    The navy background does the heavy lifting; the subtle gradient adds just enough
+   depth to prevent it from looking flat. DONT CHANGE THIS
+ */
 header {
     background-color: var(--navy);
-    /* A gentle diagonal gradient from pure navy toward a
+    /* A diagonal gradient from pure navy toward a
        slightly lighter blue — adds depth without changing
        the overall color impression */
     background-image: linear-gradient(
@@ -198,7 +187,7 @@ header {
 
 header h1 {
     /* Georgia for the main title gives editorial weight and
-       authority — it pairs well with the sans-serif body text
+       authority — it looks good with the sans-serif body text
        and requires no external font loading */
     font-family: Georgia, 'Times New Roman', serif;
     font-size: clamp(1.6rem, 4vw, 2.2rem); /* scales with viewport */
@@ -217,11 +206,11 @@ header p {
 }
 
 
-/* ── 5. MAIN CONTENT CARD ────────────────────────────────────
+/*  5. MAIN CONTENT CARD 
    The <main> element is styled as a white card that floats
    above the yellow background. The shadow is what creates the
    sense of depth and separates the content from the backdrop.
-   ─────────────────────────────────────────────────────────── */
+ */
 main {
     background-color: var(--bg-card);
     border: 1px solid var(--border);
@@ -229,7 +218,7 @@ main {
     box-shadow: var(--shadow-md);
     padding: var(--space-lg) var(--space-lg);
     /* Each <section> inside main gets a top margin for breathing
-       room. We define this here rather than on each section so
+       room. Its defined here rather than on each section so
        the rhythm is controlled in one place. */
     display: flex;
     flex-direction: column;
@@ -262,7 +251,7 @@ main p:last-child {
 }
 
 
-/* ── 6. ABOUT GRID (definition list layout) ──────────────────
+/*  6. ABOUT GRID (definition list layout) 
    The <dl> inside the About section uses a CSS grid to create
    a two-column label-value layout. The <dt> elements form the
    left column; the <dd> elements form the right.
@@ -270,10 +259,10 @@ main p:last-child {
    A definition list is the semantically correct element here —
    it communicates "these are named values" to screen readers
    and search engines, not just to human eyes.
-   ─────────────────────────────────────────────────────────── */
+ */
 .about-grid {
     display: grid;
-    /* 160px for the label column; 1fr (remaining space) for values */
+    /* 160px for the label column; 1fr (the remaining space) for values */
     grid-template-columns: 160px 1fr;
     gap: 10px 20px;
     font-size: 0.93rem;
@@ -287,7 +276,7 @@ main p:last-child {
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--text-muted);
-    /* Slight top padding aligns the label baseline with the
+    /* Little top padding aligns the label baseline with the
        first line of its paired <dd> value */
     padding-top: 3px;
 }
@@ -314,12 +303,12 @@ main p:last-child {
 }
 
 
-/* ── 7. DISCLAIMER PANEL ─────────────────────────────────────
+/*  7. DISCLAIMER PANEL 
    The disclaimer needs to stand out from the surrounding
    content without being alarming. A warm yellow background
    with a golden left border strikes that balance — it reads
    as "important note" rather than "error".
-   ─────────────────────────────────────────────────────────── */
+ */
 .disclaimer {
     background-color: var(--warning-bg);
     border-left: 4px solid var(--warning-border);
@@ -332,7 +321,7 @@ main p:last-child {
     line-height: 1.7;
 }
 
-/* The <strong> label inside the disclaimer acts as a mini
+/* The <strong> label inside the disclaimer is like a mini
    heading — smaller than h2, styled to match the warning tone */
 .disclaimer strong {
     display: block;
@@ -345,7 +334,7 @@ main p:last-child {
 }
 
 
-/* ── 8. LINK LIST ─────────────────────────────────────────────
+/* 8. LINK LIST 
    Used for both the Lab Work and Individual Project Work
    sections. Each <li> contains an <a> link with a small
    <span class="dot"> bullet before the text.
@@ -353,7 +342,7 @@ main p:last-child {
    The hover state reveals a navy-tinted background, which
    gives the list an interactive, clickable character without
    making it look like a grid of buttons.
-   ─────────────────────────────────────────────────────────── */
+ */
 .link-list {
     list-style: none;
     /* A small gap between items prevents them from feeling
@@ -384,8 +373,7 @@ main p:last-child {
     border-bottom-color: transparent;
 }
 
-/* The dot — a small navy circle before each link.
-   Using a <span class="dot"> in the HTML keeps the bullet
+/* Using a <span class="dot"> in the HTML keeps the bullet
    as a purely decorative element, separate from the link text */
 .link-list .dot {
     display: inline-block;
@@ -404,11 +392,11 @@ main p:last-child {
 }
 
 
-/* ── 9. FOOTER ───────────────────────────────────────────────
+/* 9. FOOTER 
    The footer should feel like a quiet closing note — present
    but not demanding attention. A top border separates it from
    the main content without the need for extra spacing.
-   ─────────────────────────────────────────────────────────── */
+ */
 footer {
     text-align: center;
     padding: var(--space-md) var(--space-sm);
@@ -420,10 +408,10 @@ footer {
 }
 
 
-/* ── 10. RESPONSIVE LAYOUT ───────────────────────────────────
+/* 10. RESPONSIVE LAYOUT 
    At narrow screen widths (phones and small tablets), the
    two-column about-grid collapses to a single column, and
-   spacing is tightened so content doesn't feel cramped.
+   spacing is tightened so content isnt too bulky.
 
    The breakpoint at 640px is chosen because below that width
    a 160px label column would leave very little room for values.

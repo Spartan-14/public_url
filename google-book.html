@@ -16,7 +16,7 @@
             line-height: 1.6;
         }
 
-        /* ── Navigation ── */
+        /* Navigation */
         nav {
             background: #06402B;
             padding: 0 1.5rem;
@@ -40,7 +40,7 @@
         nav ul li a:hover { background: #0a5c38; color: #fff; }
         nav ul li a.active { background: #FFCE1B; color: #030057; }
 
-        /* ── Header ── */
+        /* Header */
         header {
             background: linear-gradient(135deg, #06402B 0%, #0a7a4a 100%);
             color: #fff;
@@ -50,14 +50,14 @@
         header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.3rem; }
         header p  { font-size: 0.95rem; opacity: 0.8; }
 
-        /* ── Main ── */
+        /* Main */
         main {
             max-width: 900px;
             margin: 2rem auto;
             padding: 0 1.25rem;
         }
 
-        /* ── Loading / error state ── */
+        /* Loading / error state */
         #status-message {
             text-align: center;
             padding: 3rem;
@@ -66,7 +66,7 @@
         }
         #status-message.error { color: #c0392b; }
 
-        /* ── Book card ── */
+        /* Book card */
         #book-card {
             display: none;
             background: #fff;
@@ -207,7 +207,7 @@
         .extra-grid .label { font-weight: 600; color: #555; }
         .extra-grid .value { color: #333; }
 
-        /* ── Footer ── */
+        /* Footer */
         footer {
             text-align: center;
             padding: 1.5rem;
@@ -301,7 +301,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         // Google Books image URLs are http:// — upgrade to https:// to prevent
-        // mixed-content blocks when the page is served over HTTPS (e.g. Azure).
+        // mixed-content blocks when the page is served over HTTPS .
         function secureUrl(url) {
             return url ? url.replace(/^http:\/\//i, 'https://') : '';
         }
