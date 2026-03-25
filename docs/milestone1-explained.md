@@ -237,3 +237,138 @@ The JavaScript logic, JSON reading, loop structure, and DOM injection are **iden
 | **$.each()** | jQuery's loop — runs a function once per item in an array |
 | **Mixed content** | Browser blocks `http://` resources on an `https://` page |
 | **DOM injection** | Using JavaScript to insert or modify HTML after the page has loaded |
+
+---
+
+## Part 5: Errors Encountered During Milestone 1
+
+This section documents every real error that was hit during development, what caused it, and how it was resolved. Commits are referenced for traceability.
+
+---
+
+### Error 1 — Azure Build Failure on First Deploy
+
+**Commit:** `707a073`
+
+**What happened:** The very first push to Azure failed. GitHub Actions ran the workflow but Azure could not deploy the site. The build step reported an error because it expected a compiled output directory.
+
+**Root cause:** The default Azure workflow configuration had:
+```yaml
+output_location: "/"
+skip_app_build: false   # (default — not written, but assumed true)
+```
+This tells Azure "run a build process and look for the output in `/`". Since this is a pure static site with no npm build, no `node_modules`, and no build step, Azure failed trying to find build output that did not exist.
+
+**Fix:**
+```yaml
+output_location: ""      # empty = no build output expected
+skip_app_build: true     # do not attempt to build anything
+```
+Telling Azure to serve the source files directly with no build step.
+
+---
+
+### Error 2 — Missing Link to `google-book.html` on the Homepage
+
+**Commit:** `457dc9c`
+
+**What happened:** `google-book.html` was created and pushed, but navigating to the homepage gave no way to reach it. The page existed on Azure but was unreachable through the UI.
+
+**Root cause:** The `<a>` tag linking to `google-book.html` was simply never added to `index.html` before committing.
+
+**Fix:** Added the navigation link to `index.html` in a follow-up commit.
+
+---
+
+### Error 3 — `google-book.html` Loaded But Showed Nothing
+
+**Commit:** `a337e1f`
+
+**What happened:** `google-book.html` rendered the page shell (nav, header, footer) but the main content area was completely empty — no book data appeared.
+
+**Root cause:** The `<script>` tag containing the jQuery `$.getJSON()` call was never added to the HTML file. The page had the HTML structure and CSS styling but no JavaScript to fetch and inject the book data.
+
+**Fix:** Added the full data-loading script block to `google-book.html`, along with the JSON data files (`google-books-book.json`, `google-books-search.json`).
+
+---
+
+### Error 4 — `$.getJSON()` Failing to Load the Local JSON File (3 Attempts)
+
+**Commits:** `c2e202d`, `5f6acae`, `8cf1c9d`
+
+**What happened:** Even after adding the script, the book page would show "Loading…" indefinitely or display the error fallback message. The JSON file was sitting in the same directory as the HTML but `$.getJSON()` could not read it. This took three separate attempts to fully resolve.
+
+**Root cause (two separate issues):**
+
+**Issue A — File protocol restriction:**
+When the HTML file is opened directly from your computer (using `file://` in the browser), browsers block all AJAX requests as a security policy. `$.getJSON()` is an AJAX call. The fix: the file must be served over HTTP, not opened as a local file. This worked fine once deployed to Azure.
+
+**Issue B — JSON MIME type not declared:**
+Azure Static Web Apps was not serving `.json` files with the correct content type (`application/json`). The browser received the file but jQuery rejected it because the MIME type was wrong or missing.
+
+**Fix for Issue A:** Serve the file from a proper server (Azure or a local dev server like VS Code Live Server) — never open it with `file://`.
+
+**Fix for Issue B (commit `8cf1c9d`):** Created `staticwebapp.config.json` at the root to explicitly declare the MIME type:
+```json
+{
+  "mimeTypes": {
+    ".json": "application/json"
+  }
+}
+```
+This tells Azure to always serve `.json` files with the correct content type header.
+
+---
+
+### Error 5 — Cover Images Not Displaying (Mixed Content Error)
+
+**What happened:** Book cover images appeared as broken image icons even though the `src` attribute was set correctly from the JSON data. This was visible in the browser console as a mixed content warning.
+
+**Root cause:** The Google Books API returns image URLs starting with `http://`:
+```
+http://books.google.com/books/content?id=...&img=1
+```
+The site is served over `https://`. Browsers enforce a security policy called **mixed content blocking** — they refuse to load `http://` resources on an `https://` page because it could expose users to man-in-the-middle attacks.
+
+**Fix:** Added the `secureUrl()` helper function, applied to every image URL before setting the `src`:
+```javascript
+function secureUrl(url) {
+    return url ? url.replace(/^http:\/\//i, 'https://') : '';
+}
+```
+This upgrades all image URLs from `http://` to `https://` at render time.
+
+---
+
+### Error 6 — Entire Deployment Pipeline Dead After Azure App Deletion
+
+**Commits:** `7a6de6e`, `cb2c5b7`
+
+**What happened:** At some point the original Azure Static Web App (`salmon-desert-0afeed21e`) was deleted or expired. After this, every single push to GitHub triggered the workflow and failed with:
+```
+Error: No matching Static Web App was found or the api key was invalid.
+```
+The site was completely un-deployable.
+
+**Root cause:** Three things were simultaneously broken:
+1. The Azure app resource no longer existed
+2. The GitHub Actions workflow file still referenced the dead app by name
+3. The deployment secret token (`AZURE_STATIC_WEB_APPS_API_TOKEN_SALMON_DESERT_0AFEED21E`) was invalid because there was nothing to authenticate against
+
+**Fix:**
+1. Created a new Azure Static Web App (`purple-water-001713d1e`)
+2. Azure automatically added a new valid deployment secret to the GitHub repo
+3. Azure automatically generated a new workflow file (`azure-static-web-apps-purple-water-001713d1e.yml`)
+4. Manually deleted the old broken workflow file to prevent conflicts
+
+---
+
+### Error 7 — `package.json` Causing Confusion with Azure Build Detection
+
+**Commits:** `1ddaeda`, `b0e490c`
+
+**What happened:** A `package.json` file existed at the repo root. Azure's deployment system detected it and assumed the project needed a Node.js build process — triggering npm install and a build step that would always fail on a pure static site.
+
+**Root cause:** The `package.json` was a leftover file not needed for the project. Azure uses file presence to auto-detect the project type and build strategy.
+
+**Fix:** Moved `package.json` into the `basic_website/` subfolder (commit `1ddaeda`), then removed it entirely (commit `b0e490c`) since it served no purpose for a static site.

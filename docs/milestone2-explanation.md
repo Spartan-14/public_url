@@ -257,6 +257,108 @@ The cards may appear in a **different order** than the array depending on which 
 
 ---
 
+## Part 5: Errors Encountered During Milestone 2
+
+This section documents every real error hit during Milestone 2 development, what caused it, and how it was resolved.
+
+---
+
+### Error 1 — API Key Exposed in Source Code (Security Risk Caught Before Damage)
+
+**What happened:** The Google Books API key was initially written directly into the JavaScript source files. Since the source of a static web app is fully visible to anyone who views the page source or inspects the network tab, the key was publicly readable.
+
+**Root cause:** There is no server-side layer to hide credentials — every byte of a static web app is sent to the browser.
+
+**Fix (two-layer mitigation):**
+
+**Layer 1 — HTTP Referrer Restriction:**
+In Google Cloud Console, the key was restricted to specific domains:
+```
+https://purple-water-001713d1e.6.azurestaticapps.net/*
+http://localhost/*
+http://127.0.0.1/*
+```
+If someone copies the key and tries to use it from their own domain, Google rejects the request because the `Referer` header does not match.
+
+**Layer 2 — API Restriction:**
+The key was restricted to the Books API only. Even if the referrer check was bypassed, the key cannot be used to call Google Maps, YouTube, or any other Google service.
+
+The key is still visible in source — but it is now useless outside the authorized domains.
+
+---
+
+### Error 2 — API Returns No Results for Edge-Case Queries
+
+**What happened:** Searching for certain terms returned a response with `totalItems: 0` and no `items` array at all — causing a JavaScript crash when the code tried to access `data.items` directly.
+
+**Root cause:** The Google Books API omits the `items` field entirely from the response when there are no results, instead of returning an empty array. Code that assumed `data.items` always existed would throw `TypeError: Cannot read property 'length' of undefined`.
+
+**Fix:** Used the `|| []` fallback everywhere `items` is accessed:
+```javascript
+allResults = data.items || [];
+```
+This means "use `data.items` if it exists, otherwise use an empty array." The UI then shows a "no results found" message instead of crashing.
+
+---
+
+### Error 3 — Second API Call Fired Even When Results Were Fewer Than 40
+
+**What happened:** The pagination logic always made two API calls — one for results 0–39 and one for results 40–59. For queries returning fewer than 40 books, the second call used `startIndex=40` which returned an empty or irrelevant response, sometimes overwriting valid first-call data.
+
+**Root cause:** The second call was not conditional on whether enough results actually existed.
+
+**Fix:** Added a guard based on `totalItems` before firing the second call:
+```javascript
+if (data.totalItems > 40) {
+    // only fetch page 2 if there are more than 40 results
+    $.getJSON(url + '&startIndex=40&maxResults=20', function(data2) {
+        allResults = allResults.concat(data2.items || []);
+        showPage(1);
+    });
+} else {
+    showPage(1);
+}
+```
+
+---
+
+### Error 4 — `book-details.html` Crashed When Opened Without a URL Parameter
+
+**What happened:** Navigating directly to `book-details.html` (without a `?id=` parameter in the URL) caused the script to pass `null` as the volume ID to the API. The API call either failed with a 404 or returned unexpected data, and the page crashed without a useful message.
+
+**Root cause:** `params.get('id')` returns `null` when the parameter is absent. The code did not check for this before constructing the API URL.
+
+**Fix:** Added a null check at the top of the script. If no `id` is found, the page shows a clear error message and stops:
+```javascript
+var bookId = params.get('id');
+if (!bookId) {
+    $('#status-message').text('Error: No book ID provided in the URL.');
+    return;
+}
+```
+
+---
+
+### Error 5 — Bookshelf Cards Appearing Out of Order
+
+**What happened:** The three books on `my-bookshelf.html` appeared in a different order on each page load. The order in the array was `[kRqeDwAAQBAJ, UTGnopblxt8C, P_zMW3EHnTEC]` but the cards sometimes rendered in a completely different sequence.
+
+**Root cause:** All three `$.getJSON()` calls fire simultaneously (asynchronously). Whichever Google server responds fastest appends its card first. Network latency varies, so the order is non-deterministic.
+
+**This was accepted as expected behavior**, not a bug. It is documented in Part 4 of this file. A fix would require collecting all responses into an array and rendering them in index order after all calls complete — but for three curated books displayed as a simple shelf, the ordering requirement did not exist.
+
+---
+
+### Error 6 — Old Broken Azure Deployment Blocked Milestone 2 from Going Live
+
+**What happened:** Milestone 2 code was written and committed, but when pushed, the GitHub Actions pipeline failed immediately — so the M2 pages never appeared on the live site.
+
+**Root cause:** This was the same broken pipeline from Milestone 1 (the `salmon-desert` app deletion). The new M2 code was ready but couldn't deploy through the dead pipeline.
+
+**Fix:** This was resolved at the same time as the M1 deployment fix — creating the new `purple-water` Azure app, installing the new deployment token, and replacing the old workflow file. Once the pipeline was fixed, both M1 and M2 deployed together.
+
+---
+
 ## Full Data Flow Summary — Milestone 2
 
 ```
